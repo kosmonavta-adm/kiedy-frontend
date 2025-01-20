@@ -1,0 +1,15 @@
+{
+    "trailingComma": "es5",
+    "tabWidth": 4,
+    "printWidth": 120,
+    "proseWrap": "always",
+    "semi": true,
+    "singleQuote": true,
+    "singleAttributePerLine": true,
+    "bracketSpacing": true,
+    "plugins": ["@trivago/prettier-plugin-sort-imports", "prettier-plugin-tailwindcss"],
+    "tailwindStylesheet": "./app/app.css",
+    "importOrder": ["^~/commons/(.*)$", "^~/features/(.*)$", "^[./]"],
+    "importOrderSeparation": true,
+    "importOrderSortSpecifiers": true
+}
