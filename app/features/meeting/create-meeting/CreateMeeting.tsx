@@ -8,26 +8,27 @@ import { CreateMeetingForm } from '~/features/meeting/create-meeting/CreateMeeti
 import { DialogAfterMeetCreation } from '~/features/meeting/create-meeting/DialogAfterMeetCreation';
 
 export const CreateMeeting = () => {
-    const [isDialogOpen, toggleIsDialogOpen] = useToggle(false);
-    const [createdMeeting, setCreatedMeeting] = useState<z.infer<typeof MeetingEntity>>();
+  const [isDialogOpen, toggleIsDialogOpen] = useToggle(false);
+  const [createdMeeting, setCreatedMeeting] = useState<z.infer<typeof MeetingEntity>>();
 
-    useEffect(() => {
-        console.log('isDialogOpen', isDialogOpen);
-    });
+  useEffect(() => {
+    console.log('isDialogOpen', isDialogOpen);
+  });
 
-    return (
-        <>
-            <CreateMeetingForm
-                onCreateMeeting={(formData) => {
-                    setCreatedMeeting(formData);
-                    toggleIsDialogOpen();
-                }}
-            />
-            <DialogAfterMeetCreation
-                isOpen={isDialogOpen}
-                onOpenChange={toggleIsDialogOpen}
-                createdMeeting={createdMeeting}
-            />
-        </>
-    );
+  return (
+    <>
+      <CreateMeetingForm
+        onCreateMeeting={(formData) => {
+          setCreatedMeeting(formData);
+          toggleIsDialogOpen();
+        }}
+      />
+      <DialogAfterMeetCreation
+        key={createdMeeting?.id}
+        isOpen={isDialogOpen}
+        onOpenChange={toggleIsDialogOpen}
+        createdMeeting={createdMeeting}
+      />
+    </>
+  );
 };

@@ -1,5 +1,37 @@
 @import 'tailwindcss';
 
-html, body {
-    height: 100%;
+@font-face {
+  font-family: 'Karla';
+  font-display: swap;
+  src: url('commons/assets/Karla.ttf');
+}
+
+@theme {
+  --font-sans: 'Karla', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+    'Noto Color Emoji';
+
+  --animate-fade-in: fade-in 0.2s ease-in-out;
+  @keyframes fade-in {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
+  --animate-fade-out: fade-out 0.2s ease-in-out;
+  @keyframes fade-out {
+    0% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+}
+
+html,
+body {
+  height: 100%;
 }

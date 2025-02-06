@@ -1,15 +1,15 @@
-import type { Route } from './+types/home';
 import { CreateMeeting } from '~/features/meeting/create-meeting/CreateMeeting';
 
+import type { Route } from './+types/home';
+
 export function meta({}: Route.MetaArgs) {
-    return [{ title: 'New React Router App' }, { name: 'description', content: 'Welcome to React Router!' }];
+  return [{ title: 'New React Router App' }, { name: 'description', content: 'Welcome to React Router!' }];
 }
 
 export default function Home() {
-
-    return (
-        <>
-            <CreateMeeting />
-        </>
-    );
+  return (
+    <main className="flex p-12">
+      <CreateMeeting />
+    </main>
+  );
 }
