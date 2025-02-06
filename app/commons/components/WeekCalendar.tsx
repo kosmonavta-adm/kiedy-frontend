@@ -58,6 +58,7 @@ export const WeekCalendar = ({ onSelectedDate, selectedDates }: WeekCalendarProp
 
           return (
             <Button
+              key={getFormatedDate(day)}
               type="button"
               className={({ isHovered, isPressed, isFocusVisible, isPending }) =>
                 cxTw(

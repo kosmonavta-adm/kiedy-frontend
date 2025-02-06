@@ -11,10 +11,6 @@ export const CreateMeeting = () => {
   const [isDialogOpen, toggleIsDialogOpen] = useToggle(false);
   const [createdMeeting, setCreatedMeeting] = useState<z.infer<typeof MeetingEntity>>();
 
-  useEffect(() => {
-    console.log('isDialogOpen', isDialogOpen);
-  });
-
   return (
     <>
       <CreateMeetingForm

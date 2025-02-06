@@ -44,7 +44,6 @@ export function CreateMeetingForm({ onCreateMeeting }: CreateMeetingProps) {
   });
 
   const durationFields = useFieldArray({ control: form.control, name: 'availability' });
-  console.log('durationFields', durationFields);
 
   const selectedDays = useWatch({ control: form.control, name: 'selectedDays' });
   const meetingDuration = useWatch({ control: form.control, name: 'duration' });
@@ -74,7 +73,6 @@ export function CreateMeetingForm({ onCreateMeeting }: CreateMeetingProps) {
         render={({ field }) => (
           <WeekCalendar
             onSelectedDate={(selectedDates, selectedDate) => {
-              console.log(selectedDate);
               field.onChange(selectedDates);
               const selectedDateIndex = durationFields.fields.findIndex(
                 (field) => field.key === getFormattedKeyValue(selectedDate)
@@ -155,7 +153,10 @@ export function CreateMeetingForm({ onCreateMeeting }: CreateMeetingProps) {
                               {field.value.reduce<ReactNode[]>((result, date, index, array) => {
                                 if (index % 2 === 0) {
                                   result.push(
-                                    <p className="text-right">
+                                    <p
+                                      key={date}
+                                      className="text-right"
+                                    >
                                       <span>{format(setMinutes(startOfDay(new Date()), date), 'HH:mm')}</span>
                                       {' - '}
                                       <span>
