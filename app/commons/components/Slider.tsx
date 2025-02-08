@@ -1,5 +1,6 @@
 import type { SliderState } from '@react-stately/slider';
 import type { SliderProps as DefaultSliderProps } from '@react-types/slider';
+import { GripVertical } from 'lucide-react';
 import { Fragment, type ReactNode, useId, useState } from 'react';
 import { Slider as DefaultSlider, SliderThumb, SliderTrack } from 'react-aria-components';
 
@@ -64,7 +65,7 @@ export function Slider({ label, onChange, onChangeEnd, tooltipContent, ...props 
       {label && <Label htmlFor={id}>{label}</Label>}
 
       <SliderTrack
-        className="relative h-2 rounded-full bg-blue-400/40"
+        className="relative h-2 rounded-full bg-blue-300/40"
         onHoverChange={setIsTooltipOpen}
       >
         {({ state }) =>
@@ -74,7 +75,7 @@ export function Slider({ label, onChange, onChangeEnd, tooltipContent, ...props 
                 {i % 2 === 0 && (
                   <>
                     <div
-                      className="absolute top-[50%] h-2 translate-y-[-50%] rounded-full bg-blue-600"
+                      className={`absolute top-[50%] h-2 translate-y-[-50%] rounded-full bg-blue-500`}
                       style={getTrackPosition(state, i)}
                     />
                     {isTooltipOpen && (
@@ -96,11 +97,13 @@ export function Slider({ label, onChange, onChangeEnd, tooltipContent, ...props 
                   aria-label="test"
                   className={({ isDragging }) =>
                     cxTw(
-                      'top-[50%] h-6 w-6 cursor-grab rounded-full border-2 border-neutral-800 bg-white ring-black outline-4 outline-white transition outline-none focus-visible:ring-2',
+                      'top-[50%] flex h-6 w-4 cursor-grab justify-center rounded border-2 border-neutral-600 bg-white ring-black outline-4 outline-white transition outline-none focus-visible:ring-2',
                       isDragging && 'cursor-grabbing bg-neutral-100'
                     )
                   }
-                />
+                >
+                  <GripVertical className="m-auto h-5 w-3" />
+                </SliderThumb>
               </Fragment>
             );
           })

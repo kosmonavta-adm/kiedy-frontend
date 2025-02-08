@@ -6,7 +6,8 @@ import { intervalToDuration } from 'date-fns/intervalToDuration';
 import { pl } from 'date-fns/locale';
 import { setMinutes } from 'date-fns/setMinutes';
 import { startOfDay } from 'date-fns/startOfDay';
-import { type ReactNode, useState } from 'react';
+import { X } from 'lucide-react';
+import { type ReactNode, useEffect, useState } from 'react';
 import { Controller, useFieldArray, useForm, useWatch } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -62,6 +63,10 @@ export function CreateMeetingForm({ onCreateMeeting }: CreateMeetingProps) {
     durationFields.remove(index);
     setIsDialogBeforeDayDeletionOpen(undefined);
   };
+
+  useEffect(() => {
+    console.log(durationFields.fields);
+  });
 
   return (
     <form
@@ -130,12 +135,13 @@ export function CreateMeetingForm({ onCreateMeeting }: CreateMeetingProps) {
         <div className="flex flex-col gap-4">
           <p className="font-bold">Dostępność:</p>
           <div className="flex flex-col gap-6">
-            {durationFields.fields.map((durationField, index) => (
+            {durationFields.fields.map((durationField, durationFieldIndex) => (
               <Controller
                 key={durationField.id}
-                name={`availability.${index}.thumbs`}
+                name={`availability.${durationFieldIndex}.thumbs`}
                 control={form.control}
                 render={({ field }) => {
+                  console.log('render', field);
                   return (
                     <div className="flex flex-col gap-8 rounded-md bg-neutral-50/50 p-4 shadow">
                       <Slider
@@ -149,19 +155,36 @@ export function CreateMeetingForm({ onCreateMeeting }: CreateMeetingProps) {
                               </span>
                             </div>
 
-                            <div className="ml-auto flex flex-col">
-                              {field.value.reduce<ReactNode[]>((result, date, index, array) => {
+                            <div className="ml-auto flex flex-col gap-3">
+                              {field?.value?.reduce<ReactNode[]>((result, date, index, array) => {
                                 if (index % 2 === 0) {
                                   result.push(
                                     <p
                                       key={date}
-                                      className="text-right"
+                                      className="flex items-center justify-end gap-2 leading-none"
                                     >
-                                      <span>{format(setMinutes(startOfDay(new Date()), date), 'HH:mm')}</span>
-                                      {' - '}
                                       <span>
+                                        {format(setMinutes(startOfDay(new Date()), date), 'HH:mm')}
+                                        {' - '}
                                         {format(setMinutes(startOfDay(new Date()), array[index + 1]), 'HH:mm')}
                                       </span>
+                                      <Button
+                                        isPending={field.value.length === 2}
+                                        onPress={() => {
+                                          console.log('x', {
+                                            ...durationField,
+                                            thumbs: field.value.toSpliced(index, 2),
+                                          });
+                                          durationFields.update(durationFieldIndex, {
+                                            ...durationField,
+                                            thumbs: [...field.value.toSpliced(index, 2)],
+                                          });
+                                        }}
+                                        variant="icon"
+                                        className="h-4 w-4"
+                                      >
+                                        <X />
+                                      </Button>
                                     </p>
                                   );
                                 }
@@ -174,7 +197,10 @@ export function CreateMeetingForm({ onCreateMeeting }: CreateMeetingProps) {
                         minValue={0}
                         maxValue={MINUTES_IN_DAY}
                         step={meetingDuration}
-                        onChange={field.onChange}
+                        onChange={(value) => {
+                          console.log(value);
+                          field.onChange(value);
+                        }}
                         tooltipContent={(value) => {
                           if (Array.isArray(value) === false) return;
 
@@ -189,26 +215,34 @@ export function CreateMeetingForm({ onCreateMeeting }: CreateMeetingProps) {
                       <div className="flex justify-between">
                         <Button
                           variant="destructive"
-                          onPress={() => setIsDialogBeforeDayDeletionOpen(index)}
+                          onPress={() => setIsDialogBeforeDayDeletionOpen(durationFieldIndex)}
                         >
                           Usuń dzień
                         </Button>
                         <DialogBeforeDayDeletion
-                          isOpen={isDialogBeforeDayDeletionOpen === index}
+                          isOpen={isDialogBeforeDayDeletionOpen === durationFieldIndex}
                           onOpenChange={() => setIsDialogBeforeDayDeletionOpen(undefined)}
-                          onConfirm={() => handleDeleteDay(index)}
+                          onConfirm={() => handleDeleteDay(durationFieldIndex)}
                         />
                         <Button
                           isPending={field.value.length === 6}
                           onPress={() => {
-                            durationFields.update(index, {
-                              ...durationField,
-                              thumbs: [
-                                ...(field.value ?? []),
-                                field.value?.at(-1) ?? 0 + meetingDuration,
-                                field.value?.at(-1) ?? 0 + meetingDuration * 2,
-                              ],
-                            });
+                            const lastThumbPosition = field.value?.at(-1) ?? 0;
+                            const firstThumbPosition = field.value?.at(0) ?? 0;
+
+                            if (lastThumbPosition < MINUTES_IN_DAY - meetingDuration) {
+                              durationFields.update(durationFieldIndex, {
+                                ...durationField,
+                                thumbs: [...(field.value ?? []), lastThumbPosition + meetingDuration, MINUTES_IN_DAY],
+                              });
+                            }
+
+                            if (firstThumbPosition > meetingDuration) {
+                              durationFields.update(durationFieldIndex, {
+                                ...durationField,
+                                thumbs: [0, firstThumbPosition - meetingDuration, ...(field.value ?? [])],
+                              });
+                            }
                           }}
                         >
                           Dodaj zakres

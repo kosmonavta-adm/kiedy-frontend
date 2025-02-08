@@ -8,8 +8,8 @@ type InputProps = { label?: string } & ComponentPropsWithRef<'input'>;
 
 export const Input = ({ label, className, ...props }: InputProps) => {
   return (
-    <>
-      {label && <Label className="mb-2">{label}</Label>}
+    <div className="flex w-full flex-col gap-2">
+      {label && <Label>{label}</Label>}
       <DefaultInput
         className={({ isFocusVisible, isFocused }) =>
           cxTw(
@@ -21,6 +21,6 @@ export const Input = ({ label, className, ...props }: InputProps) => {
         }
         {...props}
       />
-    </>
+    </div>
   );
 };
