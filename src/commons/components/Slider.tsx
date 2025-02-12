@@ -4,8 +4,8 @@ import { GripVertical } from 'lucide-react';
 import { Fragment, type ReactNode, useId, useState } from 'react';
 import { Slider as DefaultSlider, SliderThumb, SliderTrack } from 'react-aria-components';
 
-import { Label } from '~/commons/components/Label';
-import { cxTw } from '~/commons/utils';
+import { Label } from '@/commons/components/Label';
+import { cxTw } from '@/commons/utils';
 
 interface SliderProps extends DefaultSliderProps {
   label?: ReactNode;

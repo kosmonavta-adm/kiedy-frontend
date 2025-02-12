@@ -1,21 +1,18 @@
 import { Check } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
-import { useLocation } from 'react-router';
 import { z } from 'zod';
 
-import { Button } from '~/commons/components/Button';
-import { Dialog, type DialogProps } from '~/commons/components/Dialog';
-import { Input } from '~/commons/components/Input';
+import { Button } from '@/commons/components/Button';
+import { Dialog, type DialogProps } from '@/commons/components/Dialog';
+import { Input } from '@/commons/components/Input';
 
-import { MeetingEntity } from '~/features/meeting/MeetingEntity';
+import { MeetingEntity } from '@/features/meeting/MeetingEntity';
 
 interface DialogAfterMeetCreationProps extends Omit<DialogProps, 'children'> {
   createdMeeting: z.infer<typeof MeetingEntity> | undefined;
 }
 
 export function DialogAfterMeetCreation({ isOpen, onOpenChange, createdMeeting }: DialogAfterMeetCreationProps) {
-  if (createdMeeting === undefined) return;
-
   const [isCopied, setIsCopied] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const meetingUrl = `${window.location.href}${createdMeeting.id}`;

@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useNavigate } from '@tanstack/react-router';
 import { format } from 'date-fns/format';
 import { formatDuration } from 'date-fns/formatDuration';
 import { formatISO } from 'date-fns/formatISO';
@@ -6,30 +7,27 @@ import { intervalToDuration } from 'date-fns/intervalToDuration';
 import { pl } from 'date-fns/locale';
 import { setMinutes } from 'date-fns/setMinutes';
 import { startOfDay } from 'date-fns/startOfDay';
-import { X } from 'lucide-react';
-import { type ReactNode, useEffect, useState } from 'react';
+import { LoaderCircle, X } from 'lucide-react';
+import { type ReactNode, useState } from 'react';
 import { Controller, useFieldArray, useForm, useWatch } from 'react-hook-form';
 import { z } from 'zod';
 
-import { Button } from '~/commons/components/Button';
-import { Input } from '~/commons/components/Input';
-import { Slider } from '~/commons/components/Slider';
-import { WeekCalendar } from '~/commons/components/WeekCalendar';
+import { Button } from '@/commons/components/Button';
+import { Input } from '@/commons/components/Input';
+import { Slider } from '@/commons/components/Slider';
+import { WeekCalendar } from '@/commons/components/WeekCalendar';
 
-import { MeetingEntity } from '~/features/meeting/MeetingEntity';
-import { CreateMeetingEntity } from '~/features/meeting/create-meeting/CreateMeetingEntity';
-import { DialogBeforeDayDeletion } from '~/features/meeting/create-meeting/DialogBeforeDayDeletion';
-import { useCreateMeeting } from '~/features/meeting/create-meeting/useCreateMeeting';
-
-type CreateMeetingProps = {
-  onCreateMeeting?: (data: z.infer<typeof MeetingEntity>) => void;
-};
+import { CreateMeetingEntity } from '@/features/meeting/create-meeting/CreateMeetingEntity';
+import { DialogBeforeDayDeletion } from '@/features/meeting/create-meeting/DialogBeforeDayDeletion';
+import { useCreateMeeting } from '@/features/meeting/create-meeting/useCreateMeeting';
 
 const MINUTES_IN_DAY = 60 * 24;
 
 const getFormattedKeyValue = (value: Date) => formatISO(value, { representation: 'date' });
 
-export function CreateMeetingForm({ onCreateMeeting }: CreateMeetingProps) {
+export function CreateMeetingForm() {
+  const navigate = useNavigate();
+
   const [isDialogBeforeDayDeletionOpen, setIsDialogBeforeDayDeletionOpen] = useState<number | undefined>();
 
   const createMeeting = useCreateMeeting();
@@ -37,67 +35,56 @@ export function CreateMeetingForm({ onCreateMeeting }: CreateMeetingProps) {
   const form = useForm({
     defaultValues: {
       name: '',
-      selectedDays: [new Date()],
       duration: 30,
-      availability: [{ thumbs: [60 * 9, 60 * 14], key: getFormattedKeyValue(new Date()) }],
+      availability: [{ slot: [{ beginning: 60 * 9, ending: 60 * 14 }], date: getFormattedKeyValue(new Date()) }],
     },
     resolver: zodResolver(CreateMeetingEntity),
   });
 
-  const durationFields = useFieldArray({ control: form.control, name: 'availability' });
+  const availabilityFields = useFieldArray({ control: form.control, name: 'availability' });
 
-  const selectedDays = useWatch({ control: form.control, name: 'selectedDays' });
+  const availability = useWatch({ control: form.control, name: 'availability' });
   const meetingDuration = useWatch({ control: form.control, name: 'duration' });
 
   const handleSuccessSubmit = async (data: z.infer<typeof CreateMeetingEntity>) => {
+    console.log(data);
     const response = await createMeeting.mutateAsync(data);
     const meetingId = (await response.json()) as number;
-    onCreateMeeting?.({ ...data, id: meetingId });
+
+    await navigate({ to: `/${meetingId}`, search: { afterCreation: true } });
   };
 
   const handleDeleteDay = (index: number) => {
-    form.setValue(
-      'selectedDays',
-      selectedDays.filter((day) => getFormattedKeyValue(day) !== getFormattedKeyValue(selectedDays[index]))
-    );
-    durationFields.remove(index);
+    availabilityFields.remove(index);
     setIsDialogBeforeDayDeletionOpen(undefined);
   };
 
-  useEffect(() => {
-    console.log(durationFields.fields);
-  });
+  const selectedDays = availability.map((day) => new Date(day.date));
 
   return (
     <form
-      className="m-auto flex w-fit flex-col gap-18"
+      className="gap-18 m-auto flex w-fit flex-col"
       onSubmit={form.handleSubmit(handleSuccessSubmit, (e) => console.log(e))}
     >
-      <Controller
-        control={form.control}
-        render={({ field }) => (
-          <WeekCalendar
-            onSelectedDate={(selectedDates, selectedDate) => {
-              field.onChange(selectedDates);
-              const selectedDateIndex = durationFields.fields.findIndex(
-                (field) => field.key === getFormattedKeyValue(selectedDate)
-              );
-              const isDateNotSelected = selectedDateIndex !== -1;
+      <WeekCalendar
+        onSelectedDate={(selectedDates, selectedDate) => {
+          const selectedDateIndex = availabilityFields.fields.findIndex(
+            (field) => field.date === getFormattedKeyValue(selectedDate)
+          );
+          const isDateNotSelected = selectedDateIndex !== -1;
 
-              if (isDateNotSelected) {
-                durationFields.remove(selectedDateIndex);
-              } else {
-                durationFields.append({
-                  thumbs: [0, 240],
-                  key: getFormattedKeyValue(selectedDate),
-                });
-              }
-            }}
-            selectedDates={field.value}
-          />
-        )}
-        name="selectedDays"
+          if (isDateNotSelected) {
+            availabilityFields.remove(selectedDateIndex);
+          } else {
+            availabilityFields.append({
+              slot: [{ beginning: 0, ending: 240 }],
+              date: getFormattedKeyValue(selectedDate),
+            });
+          }
+        }}
+        selectedDates={selectedDays}
       />
+
       <div className="m-auto flex w-full max-w-xl flex-col gap-12">
         <Controller
           name="duration"
@@ -135,59 +122,56 @@ export function CreateMeetingForm({ onCreateMeeting }: CreateMeetingProps) {
         <div className="flex flex-col gap-4">
           <p className="font-bold">Dostępność:</p>
           <div className="flex flex-col gap-6">
-            {durationFields.fields.map((durationField, durationFieldIndex) => (
+            {availabilityFields.fields.map((durationField, durationFieldIndex) => (
               <Controller
                 key={durationField.id}
-                name={`availability.${durationFieldIndex}.thumbs`}
+                name={`availability.${durationFieldIndex}.slot`}
                 control={form.control}
                 render={({ field }) => {
-                  console.log('render', field);
+                  console.log(
+                    'render',
+                    field.value.flatMap(({ beginning, ending }) => [beginning, ending])
+                  );
                   return (
                     <div className="flex flex-col gap-8 rounded-md bg-neutral-50/50 p-4 shadow">
                       <Slider
-                        value={field.value}
+                        value={field.value.flatMap(({ beginning, ending }) => [beginning, ending])}
                         label={
                           <div className="flex w-full">
                             <div className={'flex flex-col'}>
-                              <span>{format(durationField.key, 'd MMMM', { locale: pl })}</span>
+                              <span>{format(durationField.date, 'd MMMM', { locale: pl })}</span>
                               <span className="text-neutral-600">
-                                {format(durationField.key, 'EEEE', { locale: pl })}
+                                {format(durationField.date, 'EEEE', { locale: pl })}
                               </span>
                             </div>
 
                             <div className="ml-auto flex flex-col gap-3">
-                              {field?.value?.reduce<ReactNode[]>((result, date, index, array) => {
-                                if (index % 2 === 0) {
-                                  result.push(
-                                    <p
-                                      key={date}
-                                      className="flex items-center justify-end gap-2 leading-none"
+                              {field?.value?.reduce<ReactNode[]>((result, { beginning, ending }, index) => {
+                                result.push(
+                                  <p
+                                    key={index}
+                                    className="flex items-center justify-end gap-2 leading-none"
+                                  >
+                                    <span>
+                                      {format(setMinutes(startOfDay(new Date()), beginning), 'HH:mm')}
+                                      {' - '}
+                                      {format(setMinutes(startOfDay(new Date()), ending), 'HH:mm')}
+                                    </span>
+                                    <Button
+                                      isPending={field.value.length === 2}
+                                      onPress={() => {
+                                        availabilityFields.update(durationFieldIndex, {
+                                          ...durationField,
+                                          slot: [...field.value.toSpliced(index, 1)],
+                                        });
+                                      }}
+                                      variant="icon"
+                                      className="h-4 w-4"
                                     >
-                                      <span>
-                                        {format(setMinutes(startOfDay(new Date()), date), 'HH:mm')}
-                                        {' - '}
-                                        {format(setMinutes(startOfDay(new Date()), array[index + 1]), 'HH:mm')}
-                                      </span>
-                                      <Button
-                                        isPending={field.value.length === 2}
-                                        onPress={() => {
-                                          console.log('x', {
-                                            ...durationField,
-                                            thumbs: field.value.toSpliced(index, 2),
-                                          });
-                                          durationFields.update(durationFieldIndex, {
-                                            ...durationField,
-                                            thumbs: [...field.value.toSpliced(index, 2)],
-                                          });
-                                        }}
-                                        variant="icon"
-                                        className="h-4 w-4"
-                                      >
-                                        <X />
-                                      </Button>
-                                    </p>
-                                  );
-                                }
+                                      <X />
+                                    </Button>
+                                  </p>
+                                );
 
                                 return result;
                               }, [])}
@@ -198,8 +182,17 @@ export function CreateMeetingForm({ onCreateMeeting }: CreateMeetingProps) {
                         maxValue={MINUTES_IN_DAY}
                         step={meetingDuration}
                         onChange={(value) => {
-                          console.log(value);
-                          field.onChange(value);
+                          if (Array.isArray(value) === false) return;
+                          field.onChange(
+                            value.reduce<{ beginning: number; ending: number }[]>((result, item, index) => {
+                              if (index % 2 === 0) {
+                                result.push({ beginning: item, ending: 0 });
+                              } else {
+                                result.at(-1)!.ending = item;
+                              }
+                              return result;
+                            }, [])
+                          );
                         }}
                         tooltipContent={(value) => {
                           if (Array.isArray(value) === false) return;
@@ -227,20 +220,28 @@ export function CreateMeetingForm({ onCreateMeeting }: CreateMeetingProps) {
                         <Button
                           isPending={field.value.length === 6}
                           onPress={() => {
-                            const lastThumbPosition = field.value?.at(-1) ?? 0;
-                            const firstThumbPosition = field.value?.at(0) ?? 0;
+                            const lastThumbPosition = field.value?.at(-1)?.ending ?? 0;
+                            const firstThumbPosition = field.value?.at(0)?.beginning ?? 0;
+
+                            console.log('lastThumbPosition', lastThumbPosition);
 
                             if (lastThumbPosition < MINUTES_IN_DAY - meetingDuration) {
-                              durationFields.update(durationFieldIndex, {
+                              availabilityFields.update(durationFieldIndex, {
                                 ...durationField,
-                                thumbs: [...(field.value ?? []), lastThumbPosition + meetingDuration, MINUTES_IN_DAY],
+                                slot: [
+                                  ...(field.value ?? []),
+                                  { beginning: lastThumbPosition + meetingDuration, ending: MINUTES_IN_DAY },
+                                ],
                               });
                             }
 
                             if (firstThumbPosition > meetingDuration) {
-                              durationFields.update(durationFieldIndex, {
+                              availabilityFields.update(durationFieldIndex, {
                                 ...durationField,
-                                thumbs: [0, firstThumbPosition - meetingDuration, ...(field.value ?? [])],
+                                slot: [
+                                  { beginning: 0, ending: firstThumbPosition - meetingDuration },
+                                  ...(field.value ?? []),
+                                ],
                               });
                             }
                           }}
@@ -262,10 +263,11 @@ export function CreateMeetingForm({ onCreateMeeting }: CreateMeetingProps) {
         />
 
         <Button
-          isPending={selectedDays.length === 0}
+          isPending={selectedDays.length === 0 || createMeeting.isPending}
           type="submit"
         >
           Stwórz
+          {createMeeting.isPending && <LoaderCircle className="animate-spin" />}
         </Button>
       </div>
     </form>

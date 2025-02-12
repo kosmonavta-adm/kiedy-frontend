@@ -1,8 +1,8 @@
 import type { ComponentPropsWithRef } from 'react';
 import { Input as DefaultInput } from 'react-aria-components';
 
-import { Label } from '~/commons/components/Label';
-import { cxTw } from '~/commons/utils';
+import { Label } from '@/commons/components/Label';
+import { cxTw } from '@/commons/utils';
 
 type InputProps = { label?: string } & ComponentPropsWithRef<'input'>;
 

@@ -9,7 +9,7 @@
     "bracketSpacing": true,
     "plugins": ["@trivago/prettier-plugin-sort-imports", "prettier-plugin-tailwindcss"],
     "tailwindStylesheet": "./app/app.css",
-    "importOrder": ["^~/commons/(.*)$", "^~/features/(.*)$", "^[./]"],
+    "importOrder": ["^@/commons/(.*)$", "^@/features/(.*)$", "@[./]"],
     "importOrderSeparation": true,
     "importOrderSortSpecifiers": true
 }

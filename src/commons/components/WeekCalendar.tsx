@@ -7,7 +7,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from 'react-aria-components';
 
-import { cxTw, transformSetToArray } from '~/commons/utils';
+import { cxTw, transformSetToArray } from '@/commons/utils';
 
 type WeekCalendarProps = {
   onSelectedDate: (selectedDates: Date[], selectedDate: Date) => void;

@@ -1,5 +1,5 @@
-import { Button } from '~/commons/components/Button';
-import { Dialog, type DialogProps } from '~/commons/components/Dialog';
+import { Button } from '@/commons/components/Button';
+import { Dialog, type DialogProps } from '@/commons/components/Dialog';
 
 interface DialogBeforeDayDeletionProps extends Omit<DialogProps, 'children'> {
   onConfirm: () => void;
@@ -13,7 +13,7 @@ export const DialogBeforeDayDeletion = ({ isOpen, onOpenChange, onConfirm }: Dia
       isDismissable={true}
     >
       Czy na pewno chcesz usunąć dzień?
-      <div className="mt-4 ml-auto flex gap-4">
+      <div className="ml-auto mt-4 flex gap-4">
         <Button slot="close">Anuluj</Button>
         <Button onPress={onConfirm}>Tak, usuń</Button>
       </div>

@@ -1,7 +1,18 @@
+# Local
 .DS_Store
-/node_modules/
+*.local
+*.log*
 
-# React Router
-/.react-router/
-/build/
-/.idea
+# Dist
+node_modules
+dist/
+.vinxi
+.output
+.vercel
+.netlify
+.wrangler
+
+# IDE
+.vscode/*
+!.vscode/extensions.json
+.idea

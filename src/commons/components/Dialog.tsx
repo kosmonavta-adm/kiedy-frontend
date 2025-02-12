@@ -11,7 +11,7 @@ import {
   TextField,
 } from 'react-aria-components';
 
-import { cxTw } from '~/commons/utils';
+import { cxTw } from '@/commons/utils';
 
 export interface DialogProps extends ComponentPropsWithRef<typeof ModalOverlay> {
   children: ReactNode;
