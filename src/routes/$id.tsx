@@ -37,15 +37,6 @@ function RouteComponent() {
     refetchOnReconnect: true,
     refetchOnWindowFocus: true,
   });
-
-  console.log(meeting.data);
-
-  // const slots = meeting.data.reduce((result, currentDay, index, array) => {
-  //   if (index % 2 === 0) {
-  //   }
-  //   return result;
-  // }, []);
-
   return (
     <main className="flex min-h-svh">
       <DialogAfterMeetCreation

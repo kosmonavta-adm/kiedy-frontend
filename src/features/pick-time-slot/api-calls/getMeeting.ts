@@ -32,7 +32,7 @@ export const meetingEntity = z.object({
 export function getMeeting(id: number) {
   return {
     queryFn: async () => {
-      const response = await fetch(`http://localhost:8080/meeting/${id}`);
+      const response = await fetch(`${import.meta.env.VITE_API}/meeting/${id}`);
       const parsedResponse = await response.json();
 
       return meetingEntity.parse(parsedResponse);

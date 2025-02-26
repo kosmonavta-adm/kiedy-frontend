@@ -8,7 +8,7 @@ export const pickedTimeSlotEntity = z.object({
 });
 
 export const postTimeSlotMutation = async (timeSlotToPost: z.infer<typeof pickedTimeSlotEntity>): Promise<number> => {
-  const response = await fetch('http://localhost:8080/chosenSlots', {
+  const response = await fetch(`${import.meta.env.VITE_API}/chosenSlots`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

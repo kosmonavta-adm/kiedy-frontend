@@ -1,5 +1,5 @@
 export async function deleteTimeSlotMutation(timeSlotToDelete: { userId: string; time: number }): Promise<boolean> {
-  const response = await fetch('http://localhost:8080/chosenSlots', {
+  const response = await fetch(`${import.meta.env.VITE_API}/chosenSlots`, {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json',

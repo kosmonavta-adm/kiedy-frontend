@@ -6,7 +6,7 @@ import { CreateMeetingEntity } from '@/features/create-meeting/CreateMeetingEnti
 export const useCreateMeeting = () =>
   useMutation({
     mutationFn: (meeting: z.infer<typeof CreateMeetingEntity>) => {
-      return fetch('http://localhost:8080/meeting', {
+      return fetch(`${import.meta.env.VITE_API}/meeting`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
