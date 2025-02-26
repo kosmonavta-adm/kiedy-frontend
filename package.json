@@ -6,7 +6,7 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "dev": "vite --port=3001",
-    "build": "vite cbuild",
+    "build": "vite build",
     "serve": "vite preview",
     "start": "vite"
   },
