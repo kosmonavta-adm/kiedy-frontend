@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 import { z } from 'zod';
 
-import { CreateMeetingEntity } from '@/features/meeting/create-meeting/CreateMeetingEntity';
+import { CreateMeetingEntity } from '@/features/create-meeting/CreateMeetingEntity';
 
 export const useCreateMeeting = () =>
   useMutation({

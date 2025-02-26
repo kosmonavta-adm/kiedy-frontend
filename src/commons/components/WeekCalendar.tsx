@@ -62,7 +62,7 @@ export const WeekCalendar = ({ onSelectedDate, selectedDates }: WeekCalendarProp
               type="button"
               className={({ isHovered, isPressed, isFocusVisible, isPending }) =>
                 cxTw(
-                  'group relative flex w-28 cursor-pointer flex-col rounded-lg border-3 border-neutral-100 transition-colors outline-none',
+                  'border-3 group relative flex w-28 cursor-pointer flex-col rounded-lg border-neutral-100 outline-none transition-colors',
                   (isHovered || isFocusVisible) && 'border-neutral-200',
                   isPressed && 'border-neutral-300',
                   isSelectedDate && 'border-blue-500 font-bold'
@@ -85,7 +85,7 @@ export const WeekCalendar = ({ onSelectedDate, selectedDates }: WeekCalendarProp
                   isSelectedDate && 'bg-blue-500 text-white'
                 )}
               >
-                {format(day, 'MMM', { locale: pl })}
+                {format(day, 'LLLL', { locale: pl })}
               </span>
               <span className="pt-1">{format(day, 'd', { locale: pl })}</span>
               <span className="pb-1">{format(day, 'EEE', { locale: pl })}</span>

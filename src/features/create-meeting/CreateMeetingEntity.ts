@@ -6,7 +6,7 @@ export const CreateMeetingEntity = z.object({
   availability: z.array(
     z.object({
       date: z.string(),
-      slot: z.array(
+      slots: z.array(
         z.object({
           beginning: z.number(),
           ending: z.number(),

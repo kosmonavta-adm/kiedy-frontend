@@ -1,21 +1,21 @@
 import { Check } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import { Input } from 'react-aria-components';
 import { z } from 'zod';
 
 import { Button } from '@/commons/components/Button';
 import { Dialog, type DialogProps } from '@/commons/components/Dialog';
-import { Input } from '@/commons/components/Input';
 
-import { MeetingEntity } from '@/features/meeting/MeetingEntity';
+import { meetingEntity } from '@/features/pick-time-slot/api-calls/getMeeting';
 
 interface DialogAfterMeetCreationProps extends Omit<DialogProps, 'children'> {
-  createdMeeting: z.infer<typeof MeetingEntity> | undefined;
+  createdMeeting: z.infer<typeof meetingEntity> | undefined;
 }
 
 export function DialogAfterMeetCreation({ isOpen, onOpenChange, createdMeeting }: DialogAfterMeetCreationProps) {
   const [isCopied, setIsCopied] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const meetingUrl = `${window.location.href}${createdMeeting.id}`;
+  const meetingUrl = new URL(window.location.href).origin + `/${createdMeeting?.id}`;
 
   const handleCopyLink = async (link: string) => {
     await navigator.clipboard.writeText(link).catch((e) => console.log(e));
@@ -39,7 +39,7 @@ export function DialogAfterMeetCreation({ isOpen, onOpenChange, createdMeeting }
         <Input
           readOnly={true}
           ref={inputRef}
-          className="w-full"
+          className="w-full rounded border border-neutral-300 px-3 py-1.5 outline-none"
           onClick={() => inputRef.current?.setSelectionRange(0, -1)}
           value={meetingUrl}
         />

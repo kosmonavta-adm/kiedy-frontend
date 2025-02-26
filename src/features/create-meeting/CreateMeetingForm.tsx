@@ -17,9 +17,9 @@ import { Input } from '@/commons/components/Input';
 import { Slider } from '@/commons/components/Slider';
 import { WeekCalendar } from '@/commons/components/WeekCalendar';
 
-import { CreateMeetingEntity } from '@/features/meeting/create-meeting/CreateMeetingEntity';
-import { DialogBeforeDayDeletion } from '@/features/meeting/create-meeting/DialogBeforeDayDeletion';
-import { useCreateMeeting } from '@/features/meeting/create-meeting/useCreateMeeting';
+import { CreateMeetingEntity } from '@/features/create-meeting/CreateMeetingEntity';
+import { DialogBeforeDayDeletion } from '@/features/create-meeting/DialogBeforeDayDeletion';
+import { useCreateMeeting } from '@/features/create-meeting/useCreateMeeting';
 
 const MINUTES_IN_DAY = 60 * 24;
 
@@ -36,7 +36,7 @@ export function CreateMeetingForm() {
     defaultValues: {
       name: '',
       duration: 30,
-      availability: [{ slot: [{ beginning: 60 * 9, ending: 60 * 14 }], date: getFormattedKeyValue(new Date()) }],
+      availability: [{ slots: [{ beginning: 60 * 9, ending: 60 * 14 }], date: getFormattedKeyValue(new Date()) }],
     },
     resolver: zodResolver(CreateMeetingEntity),
   });
@@ -77,7 +77,7 @@ export function CreateMeetingForm() {
             availabilityFields.remove(selectedDateIndex);
           } else {
             availabilityFields.append({
-              slot: [{ beginning: 0, ending: 240 }],
+              slots: [{ beginning: 0, ending: 240 }],
               date: getFormattedKeyValue(selectedDate),
             });
           }
@@ -125,7 +125,7 @@ export function CreateMeetingForm() {
             {availabilityFields.fields.map((durationField, durationFieldIndex) => (
               <Controller
                 key={durationField.id}
-                name={`availability.${durationFieldIndex}.slot`}
+                name={`availability.${durationFieldIndex}.slots`}
                 control={form.control}
                 render={({ field }) => {
                   console.log(
@@ -162,7 +162,7 @@ export function CreateMeetingForm() {
                                       onPress={() => {
                                         availabilityFields.update(durationFieldIndex, {
                                           ...durationField,
-                                          slot: [...field.value.toSpliced(index, 1)],
+                                          slots: [...field.value.toSpliced(index, 1)],
                                         });
                                       }}
                                       variant="icon"
@@ -223,12 +223,10 @@ export function CreateMeetingForm() {
                             const lastThumbPosition = field.value?.at(-1)?.ending ?? 0;
                             const firstThumbPosition = field.value?.at(0)?.beginning ?? 0;
 
-                            console.log('lastThumbPosition', lastThumbPosition);
-
                             if (lastThumbPosition < MINUTES_IN_DAY - meetingDuration) {
                               availabilityFields.update(durationFieldIndex, {
                                 ...durationField,
-                                slot: [
+                                slots: [
                                   ...(field.value ?? []),
                                   { beginning: lastThumbPosition + meetingDuration, ending: MINUTES_IN_DAY },
                                 ],
@@ -238,7 +236,7 @@ export function CreateMeetingForm() {
                             if (firstThumbPosition > meetingDuration) {
                               availabilityFields.update(durationFieldIndex, {
                                 ...durationField,
-                                slot: [
+                                slots: [
                                   { beginning: 0, ending: firstThumbPosition - meetingDuration },
                                   ...(field.value ?? []),
                                 ],
