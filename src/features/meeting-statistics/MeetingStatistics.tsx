@@ -1,10 +1,10 @@
 import { format } from 'date-fns/format';
-import { ReactNode, useState } from 'react';
+import { useState } from 'react';
 import { z } from 'zod';
 
 import { Button } from '@/commons/components/Button';
-import { ViewportWrapper } from '@/commons/components/OverflowWrapper';
 import { Tooltip, TooltipTrigger } from '@/commons/components/Tooltip';
+import { ViewportWrapper } from '@/commons/components/ViewportWrapper';
 
 import { Box } from '@/features/meeting-statistics/internal/Box';
 import { TimeButton } from '@/features/meeting-statistics/internal/TimeButton';

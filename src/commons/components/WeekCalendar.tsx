@@ -7,6 +7,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from 'react-aria-components';
 
+import { ViewportWrapper } from '@/commons/components/ViewportWrapper';
 import { cxTw, transformSetToArray } from '@/commons/utils';
 
 type WeekCalendarProps = {
@@ -15,7 +16,7 @@ type WeekCalendarProps = {
 };
 
 const getFormatedDate = (date: Date) => formatISO(date, { representation: 'date' });
-const checkIsSelectedDate = (date: Date, selectedDates: Set<String>) => selectedDates.has(getFormatedDate(date));
+const checkIsSelectedDate = (date: Date, selectedDates: Set<string>) => selectedDates.has(getFormatedDate(date));
 
 export const WeekCalendar = ({ onSelectedDate, selectedDates }: WeekCalendarProps) => {
   const [weekIndex, setWeekIndex] = useState(0);
@@ -52,47 +53,52 @@ export const WeekCalendar = ({ onSelectedDate, selectedDates }: WeekCalendarProp
         <ChevronLeft />
       </Button>
 
-      <div className="flex gap-2">
-        {week.map((day) => {
-          const isSelectedDate = checkIsSelectedDate(day, internalSelectedDates);
+      <ViewportWrapper
+        xMargin={128 + 24 * 2}
+        isSnapActive={false}
+      >
+        <div className="flex gap-2">
+          {week.map((day) => {
+            const isSelectedDate = checkIsSelectedDate(day, internalSelectedDates);
 
-          return (
-            <Button
-              key={getFormatedDate(day)}
-              type="button"
-              className={({ isHovered, isPressed, isFocusVisible, isPending }) =>
-                cxTw(
-                  'border-3 group relative flex w-28 cursor-pointer flex-col rounded-lg border-neutral-100 outline-none transition-colors',
-                  (isHovered || isFocusVisible) && 'border-neutral-200',
-                  isPressed && 'border-neutral-300',
-                  isSelectedDate && 'border-blue-500 font-bold'
-                )
-              }
-              onPress={() => {
-                handleSelectedDay(isSelectedDate, day);
+            return (
+              <Button
+                key={getFormatedDate(day)}
+                type="button"
+                className={({ isHovered, isPressed, isFocusVisible }) =>
+                  cxTw(
+                    'border-3 group relative flex w-28 cursor-pointer flex-col rounded-lg border-neutral-100 outline-none transition-colors',
+                    (isHovered || isFocusVisible) && 'border-neutral-200',
+                    isPressed && 'border-neutral-300',
+                    isSelectedDate && 'border-blue-500 font-bold'
+                  )
+                }
+                onPress={() => {
+                  handleSelectedDay(isSelectedDate, day);
 
-                onSelectedDate(
-                  transformSetToArray(internalSelectedDates, (item) => toDate(item)),
-                  day
-                );
-              }}
-            >
-              <span
-                className={cxTw(
-                  'relative top-0 w-full bg-neutral-100 transition-colors',
-                  isSelectedDate === false &&
-                    'group-data-[focused="true"]:bg-neutral-200 group-data-[hovered="true"]:bg-neutral-200 group-data-[pressed="true"]:bg-neutral-300',
-                  isSelectedDate && 'bg-blue-500 text-white'
-                )}
+                  onSelectedDate(
+                    transformSetToArray(internalSelectedDates, (item) => toDate(item)),
+                    day
+                  );
+                }}
               >
-                {format(day, 'LLLL', { locale: pl })}
-              </span>
-              <span className="pt-1">{format(day, 'd', { locale: pl })}</span>
-              <span className="pb-1">{format(day, 'EEE', { locale: pl })}</span>
-            </Button>
-          );
-        })}
-      </div>
+                <span
+                  className={cxTw(
+                    'relative top-0 w-full bg-neutral-100 transition-colors',
+                    isSelectedDate === false &&
+                      'group-data-[focused="true"]:bg-neutral-200 group-data-[hovered="true"]:bg-neutral-200 group-data-[pressed="true"]:bg-neutral-300',
+                    isSelectedDate && 'bg-blue-500 text-white'
+                  )}
+                >
+                  {format(day, 'LLLL', { locale: pl })}
+                </span>
+                <span className="pt-1">{format(day, 'd', { locale: pl })}</span>
+                <span className="pb-1">{format(day, 'EEE', { locale: pl })}</span>
+              </Button>
+            );
+          })}
+        </div>
+      </ViewportWrapper>
       <Button
         className={({ isPending, isHovered, isPressed }) =>
           cxTw(

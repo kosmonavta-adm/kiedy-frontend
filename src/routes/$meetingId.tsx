@@ -13,10 +13,10 @@ const productSearchSchema = z.object({
   afterCreation: z.boolean().optional(),
 });
 
-export const Route = createFileRoute('/$id')({
+export const Route = createFileRoute('/$meetingId')({
   component: RouteComponent,
-  loader: ({ context: { queryClient }, params: { id } }) => {
-    return queryClient.ensureQueryData(getMeeting(Number(id)));
+  loader: ({ context: { queryClient }, params: { meetingId } }) => {
+    return queryClient.ensureQueryData(getMeeting(Number(meetingId)));
   },
 
   validateSearch: productSearchSchema,
@@ -26,10 +26,13 @@ function RouteComponent() {
   const { afterCreation } = Route.useSearch();
   const [isDialogAfterMeetCreationOpen, toggleIsDialogAfterMeetCreationOpen] = useToggle(Boolean(afterCreation));
 
-  const { id } = Route.useParams();
+  const { meetingId } = Route.useParams();
+
   const navigate = useNavigate();
+
+  //TODO: This should be implemented as websockets.
   const meeting = useSuspenseQuery({
-    ...getMeeting(Number(id)),
+    ...getMeeting(Number(meetingId)),
     staleTime: 1,
     refetchInterval: 2000,
     refetchIntervalInBackground: true,
@@ -37,8 +40,12 @@ function RouteComponent() {
     refetchOnReconnect: true,
     refetchOnWindowFocus: true,
   });
+
+  const isAnySlotPicked = meeting.data.availability.some((day) => day.chosenSlots.length > 0);
+
   return (
-    <main className="flex min-h-svh">
+    <main className="flex min-h-svh flex-col p-12">
+      <h1 className="text-center text-4xl font-bold leading-snug xl:text-7xl xl:font-normal">{meeting.data.name}</h1>
       <DialogAfterMeetCreation
         createdMeeting={meeting.data}
         isOpen={isDialogAfterMeetCreationOpen}
@@ -47,9 +54,9 @@ function RouteComponent() {
           await navigate({ to: window.location.pathname });
         }}
       />
-      <div className="m-auto grid max-w-[1920px] grid-cols-1 gap-16 bg-white p-8 xl:grid-cols-2 xl:gap-64 xl:p-16">
-        <MeetingStatistics meeting={meeting.data} />
+      <div className="mx-auto grid max-w-[1920px] grid-cols-1 gap-16 bg-white p-8 xl:grid-cols-2 xl:gap-64 xl:p-16">
         <PickTimeSlot meeting={meeting.data} />
+        {isAnySlotPicked && <MeetingStatistics meeting={meeting.data} />}
       </div>
     </main>
   );

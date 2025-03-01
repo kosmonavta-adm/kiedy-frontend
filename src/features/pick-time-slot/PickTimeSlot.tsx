@@ -6,9 +6,9 @@ import { z } from 'zod';
 
 import { Button } from '@/commons/components/Button';
 import { Input } from '@/commons/components/Input';
-import { ViewportWrapper } from '@/commons/components/OverflowWrapper';
 import { ToggleVisibility } from '@/commons/components/ToggleVisibility';
 import { Tooltip, TooltipTrigger } from '@/commons/components/Tooltip';
+import { ViewportWrapper } from '@/commons/components/ViewportWrapper';
 import { useUser } from '@/commons/providers/UserProvider';
 import { cxTw, getDateFromMinutes } from '@/commons/utils';
 

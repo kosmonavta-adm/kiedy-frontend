@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import { format } from 'date-fns/format';
 import { formatDuration } from 'date-fns/formatDuration';
@@ -17,9 +18,8 @@ import { Input } from '@/commons/components/Input';
 import { Slider } from '@/commons/components/Slider';
 import { WeekCalendar } from '@/commons/components/WeekCalendar';
 
-import { CreateMeetingEntity } from '@/features/create-meeting/CreateMeetingEntity';
 import { DialogBeforeDayDeletion } from '@/features/create-meeting/DialogBeforeDayDeletion';
-import { useCreateMeeting } from '@/features/create-meeting/useCreateMeeting';
+import { postMeeting, postMeetingEntity } from '@/features/create-meeting/api-calls/postMeeting';
 
 const MINUTES_IN_DAY = 60 * 24;
 
@@ -30,7 +30,7 @@ export function CreateMeetingForm() {
 
   const [isDialogBeforeDayDeletionOpen, setIsDialogBeforeDayDeletionOpen] = useState<number | undefined>();
 
-  const createMeeting = useCreateMeeting();
+  const createMeeting = useMutation({ mutationFn: postMeeting });
 
   const form = useForm({
     defaultValues: {
@@ -38,7 +38,7 @@ export function CreateMeetingForm() {
       duration: 30,
       availability: [{ slots: [{ beginning: 60 * 9, ending: 60 * 14 }], date: getFormattedKeyValue(new Date()) }],
     },
-    resolver: zodResolver(CreateMeetingEntity),
+    resolver: zodResolver(postMeetingEntity),
   });
 
   const availabilityFields = useFieldArray({ control: form.control, name: 'availability' });
@@ -46,10 +46,8 @@ export function CreateMeetingForm() {
   const availability = useWatch({ control: form.control, name: 'availability' });
   const meetingDuration = useWatch({ control: form.control, name: 'duration' });
 
-  const handleSuccessSubmit = async (data: z.infer<typeof CreateMeetingEntity>) => {
-    console.log(data);
-    const response = await createMeeting.mutateAsync(data);
-    const meetingId = (await response.json()) as number;
+  const handleSuccessSubmit = async (data: z.infer<typeof postMeetingEntity>) => {
+    const meetingId = await createMeeting.mutateAsync(data);
 
     await navigate({ to: `/${meetingId}`, search: { afterCreation: true } });
   };

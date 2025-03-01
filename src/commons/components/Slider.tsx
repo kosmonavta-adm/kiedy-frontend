@@ -80,7 +80,7 @@ export function Slider({ label, onChange, onChangeEnd, tooltipContent, ...props 
                     />
                     {isTooltipOpen && (
                       <div
-                        className="absolute top-[24px] w-fit translate-x-[-50%] rounded border border-neutral-200/50 bg-white px-4 py-2 text-center text-nowrap shadow-lg"
+                        className="absolute bottom-[100%] w-fit -translate-y-4 translate-x-[-50%] text-nowrap rounded border border-neutral-200/50 bg-white px-4 py-2 text-center shadow-lg"
                         style={getTooltipPosition(state, i)}
                       >
                         {state.values.length === 1
@@ -97,7 +97,7 @@ export function Slider({ label, onChange, onChangeEnd, tooltipContent, ...props 
                   aria-label="test"
                   className={({ isDragging }) =>
                     cxTw(
-                      'top-[50%] flex h-6 w-4 cursor-grab justify-center rounded border-2 border-neutral-600 bg-white ring-black outline-4 outline-white transition outline-none focus-visible:ring-2',
+                      'top-[50%] flex h-6 w-4 cursor-grab justify-center rounded border-2 border-neutral-600 bg-white outline-none outline-4 outline-white ring-black transition focus-visible:ring-2',
                       isDragging && 'cursor-grabbing bg-neutral-100'
                     )
                   }

@@ -11,14 +11,14 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as IdImport } from './routes/$id'
+import { Route as MeetingIdImport } from './routes/$meetingId'
 import { Route as IndexImport } from './routes/index'
 
 // Create/Update Routes
 
-const IdRoute = IdImport.update({
-  id: '/$id',
-  path: '/$id',
+const MeetingIdRoute = MeetingIdImport.update({
+  id: '/$meetingId',
+  path: '/$meetingId',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -39,11 +39,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
-    '/$id': {
-      id: '/$id'
-      path: '/$id'
-      fullPath: '/$id'
-      preLoaderRoute: typeof IdImport
+    '/$meetingId': {
+      id: '/$meetingId'
+      path: '/$meetingId'
+      fullPath: '/$meetingId'
+      preLoaderRoute: typeof MeetingIdImport
       parentRoute: typeof rootRoute
     }
   }
@@ -53,37 +53,37 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/$id': typeof IdRoute
+  '/$meetingId': typeof MeetingIdRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/$id': typeof IdRoute
+  '/$meetingId': typeof MeetingIdRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
-  '/$id': typeof IdRoute
+  '/$meetingId': typeof MeetingIdRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/$id'
+  fullPaths: '/' | '/$meetingId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/$id'
-  id: '__root__' | '/' | '/$id'
+  to: '/' | '/$meetingId'
+  id: '__root__' | '/' | '/$meetingId'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  IdRoute: typeof IdRoute
+  MeetingIdRoute: typeof MeetingIdRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  IdRoute: IdRoute,
+  MeetingIdRoute: MeetingIdRoute,
 }
 
 export const routeTree = rootRoute
@@ -97,14 +97,14 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/$id"
+        "/$meetingId"
       ]
     },
     "/": {
       "filePath": "index.tsx"
     },
-    "/$id": {
-      "filePath": "$id.tsx"
+    "/$meetingId": {
+      "filePath": "$meetingId.tsx"
     }
   }
 }
